@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Remix: Cérebro Digital Layon-System",
+  "description": "Sistema de Inteligência Artificial com memória persistente, aprendizado evolutivo contínuo e grafo cerebral interativo. Desenvolvido por João Layon (@layon.dev).",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
