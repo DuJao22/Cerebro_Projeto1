@@ -711,6 +711,7 @@ Desenvolvido pelo engenheiro líder **João Layon** (Instagram: **[@layon.dev](h
   const [isOptimizingLayout, setIsOptimizingLayout] = useState(false);
   const [isMapFocused, setIsMapFocused] = useState(false);
   const [fullscreenCreatorBlock, setFullscreenCreatorBlock] = useState<'editor' | 'terminal' | 'preview' | null>(null);
+  const [isFullscreenSidePanelOpen, setIsFullscreenSidePanelOpen] = useState(true);
   const [sandboxPreviewMode, setSandboxPreviewMode] = useState<'simulated' | 'live'>('live');
   const [previewDeviceMode, setPreviewDeviceMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [mainView, setMainView] = useState<'map' | 'creator'>('map');
@@ -6510,8 +6511,22 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
                                     📳 MOBILE
                                   </button>
                                 </div>
-                                <div className="text-[#00ff9d] font-bold">
-                                  {previewDeviceMode === 'desktop' ? '100% FLUID' : previewDeviceMode === 'tablet' ? '768px' : '390px'}
+                                <div className="flex items-center gap-2">
+                                  <div className="text-[#00ff9d] font-bold">
+                                    {previewDeviceMode === 'desktop' ? '100% FLUID' : previewDeviceMode === 'tablet' ? '768px' : '390px'}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      playSciFiBeep(1100, 0.08);
+                                      setFullscreenCreatorBlock('preview');
+                                    }}
+                                    className="bg-cyan-500/15 text-[#00f2ff] hover:bg-cyan-500/30 border border-cyan-500/30 px-2 py-0.5 rounded text-[8.5px] font-mono font-black flex items-center gap-1 transition cursor-pointer"
+                                    title="Visualizar Landing Page / Criação em Tela Cheia"
+                                  >
+                                    <Maximize2 className="w-2.5 h-2.5" />
+                                    <span>TELA CHEIA</span>
+                                  </button>
                                 </div>
                               </div>
 
@@ -7554,6 +7569,23 @@ CREATE INDEX IF NOT EXISTS idx_relacoes_destino ON relacoes(destino_id);`);
               <button
                 type="button"
                 onClick={() => {
+                  playSciFiBeep(isFullscreenSidePanelOpen ? 700 : 1000, 0.08);
+                  setIsFullscreenSidePanelOpen(!isFullscreenSidePanelOpen);
+                }}
+                className={`border text-[9.5px] font-mono px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 cursor-pointer shrink-0 ${
+                  isFullscreenSidePanelOpen 
+                    ? "bg-indigo-950/40 border-indigo-500/30 text-indigo-300 hover:text-white"
+                    : "bg-emerald-500/10 border-[#00ff9d]/30 text-[#00ff9d] hover:bg-emerald-500/20"
+                }`}
+                title={isFullscreenSidePanelOpen ? "Ocultar Painel Lateral (Logs)" : "Exibir Painel Lateral (Logs)"}
+              >
+                <Sliders className="w-3 h-3" />
+                <span>{isFullscreenSidePanelOpen ? "Ocultar Logs" : "Mostrar Logs"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
                   playSciFiBeep(1200, 0.08);
                   const iframe = document.getElementById('fullscreen_live_sandbox_iframe') as HTMLIFrameElement;
                   if (iframe) iframe.srcdoc = getLiveIframeHtml(creatorResult);
@@ -7586,10 +7618,10 @@ CREATE INDEX IF NOT EXISTS idx_relacoes_destino ON relacoes(destino_id);`);
                     <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
                     <span className="w-2.5 h-2.5 rounded-full bg-green-500/40" />
                   </div>
-                  <div className="bg-black/60 px-6 py-0.5 rounded border border-gray-900/60 leading-none w-72 truncate text-center text-gray-400">
+                  <div className="bg-black/60 px-6 py-0.5 rounded border border-gray-900/60 leading-none w-72 truncate text-center text-gray-400 font-mono text-[9px]">
                     https://layon.studio/sandbox/app-viewer/{creatorResult.appName.toLowerCase().replace(/\s+/g, '-')}
                   </div>
-                  <span className="text-[7px] text-[#00f2ff] tracking-widest">LIVE IFRAME</span>
+                  <span className="text-[7px] text-[#00f2ff] tracking-widest font-mono">LIVE IFRAME</span>
                 </div>
 
                 <iframe
@@ -7603,7 +7635,8 @@ CREATE INDEX IF NOT EXISTS idx_relacoes_destino ON relacoes(destino_id);`);
             </div>
 
             {/* LIVE TELEMETRIES & TERMINAL CONSOLE CONTROL (SIDE PANEL) */}
-            <div className="w-96 border-l border-indigo-950/80 bg-[#07090e]/95 flex flex-col h-full overflow-hidden select-text">
+            {isFullscreenSidePanelOpen && (
+              <div className="w-96 border-l border-indigo-950/80 bg-[#07090e]/95 flex flex-col h-full overflow-hidden select-text animate-fadeIn">
               <div className="p-3.5 border-b border-indigo-950/80 bg-slate-950/90 flex items-center justify-between font-mono text-xs text-white shrink-0 select-none">
                 <span className="font-bold flex items-center gap-2">
                   <Binary className="w-4 h-4 text-[#00ff9d] animate-pulse" />
@@ -7676,6 +7709,7 @@ CREATE INDEX IF NOT EXISTS idx_relacoes_destino ON relacoes(destino_id);`);
                 />
               </form>
             </div>
+            )}
           </div>
         </div>
       )}

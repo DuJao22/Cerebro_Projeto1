@@ -32,7 +32,7 @@ export function getGemini(): GoogleGenAI {
 /**
  * Executes a Gemini content generation request with automated retry backoff on 503/UNAVAILABLE or heavy demand errors.
  */
-export async function generateContentWithRetry(params: any, retries = 3, delayMs = 1200): Promise<any> {
+export async function generateContentWithRetry(params: any, retries = 6, delayMs = 1500): Promise<any> {
   const ai = getGemini();
   let lastErr: any = null;
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -42,11 +42,22 @@ export async function generateContentWithRetry(params: any, retries = 3, delayMs
     } catch (err: any) {
       lastErr = err;
       const errMsg = String(err?.message || err || '').toLowerCase();
-      const isTransient = errMsg.includes('503') || errMsg.includes('unavailable') || errMsg.includes('demand') || errMsg.includes('limit') || errMsg.includes('overload');
+      const isTransient = 
+        errMsg.includes('503') || 
+        errMsg.includes('unavailable') || 
+        errMsg.includes('demand') || 
+        errMsg.includes('limit') || 
+        errMsg.includes('overload') || 
+        errMsg.includes('rate limit') || 
+        errMsg.includes('resource exhausted');
+        
       if (isTransient && attempt < retries) {
-        console.warn(`[GEMINI RETRY] Tentativa ${attempt}/${retries} falhou devido a sobrecarga da API Meta. Retentando em ${delayMs}ms... Erro:`, errMsg);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-        delayMs *= 2.5; // Exponential backoff
+        // Add subtle randomized jitter (between 200ms and 800ms) to prevent lockstep retry storms
+        const jitter = Math.floor(Math.random() * 600) + 200;
+        const finalDelay = delayMs + jitter;
+        console.warn(`[GEMINI RETRY] Tentativa ${attempt}/${retries} falhou devido a sobrecarga da API Meta. Retentando em ${finalDelay}ms... Erro:`, errMsg);
+        await new Promise(resolve => setTimeout(resolve, finalDelay));
+        delayMs = Math.floor(delayMs * 2.2); // Exponential backoff factor
       } else {
         throw err;
       }
