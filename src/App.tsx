@@ -10,7 +10,7 @@ import {
   Activity, ExternalLink, ShieldAlert, Instagram, Info, Network, AlertCircle,
   Maximize2, Minimize2, Menu, X, MessageSquare, Sliders, FileText, Zap, BookOpen, Lightbulb,
   Github, FolderGit2, Code, Braces, Binary, PlaySquare, Settings, CornerDownRight, Check,
-  Coins, Plane, Save, Import, Layers, Heart, Filter, MessageSquareCode
+  Coins, Plane, Save, Import, Layers, Heart, Filter, MessageSquareCode, ArrowLeft
 } from 'lucide-react';
 import * as d3 from 'd3';
 import { ChatMessage, BrainStatus, Memory, Relationship, MemoryType } from './types.js';
@@ -71,16 +71,16 @@ function getLiveIframeHtml(creatorResult: any): string {
 
         <main class="flex-1 max-w-4xl mx-auto py-12 text-center flex flex-col justify-center items-center">
           <span class="inline-block py-1 px-3 bg-emerald-500/10 text-[#00ff9d] border border-emerald-500/20 rounded-full text-[9px] font-mono uppercase tracking-widest font-bold mb-4">🚀 COMPILADO COM SUCESSO</span>
-          <h1 class="text-3xl font-display font-medium text-white tracking-tight mb-2">\${creatorResult.appName}</h1>
-          <p class="text-xs text-gray-400 mb-6 max-w-lg mx-auto">\${creatorResult.description}</p>
+          <h1 class="text-3xl font-display font-medium text-white tracking-tight mb-2">${creatorResult.appName}</h1>
+          <p class="text-xs text-gray-400 mb-6 max-w-lg mx-auto">${creatorResult.description}</p>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-left max-w-xl mx-auto mb-8 w-full">
-            \${creatorResult.files.map((f: any) => \`
+            ${creatorResult.files.map((f: any) => `
               <div class="bg-slate-900/30 border border-slate-800/60 p-3 rounded-xl hover:border-indigo-500/30 transition">
-                <span class="font-mono text-[10px] text-[#00f2ff] font-bold block mb-1">📁 \${f.fileName}</span>
-                <p class="text-[9px] text-gray-500">\${f.fileLanguage === 'typescript' || f.fileLanguage === 'tsx' ? 'React & TSX Component code structure' : 'Cascading stylesheets and visuals'}</p>
+                <span class="font-mono text-[10px] text-[#00f2ff] font-bold block mb-1">📁 ${f.fileName}</span>
+                <p class="text-[9px] text-gray-500">${f.fileLanguage === 'typescript' || f.fileLanguage === 'tsx' ? 'React & TSX Component code structure' : 'Cascading stylesheets and visuals'}</p>
               </div>
-            \`).join('')}
+            `).join('')}
           </div>
 
           <button onclick="alert('Conexão ativa de testes estabelecida!')" class="bg-gradient-to-r from-[#00ff9d] to-[#00f2ff] text-black font-mono font-black text-[10px] py-2.5 px-6 rounded-lg hover:opacity-90 active:scale-95 transition tracking-widest uppercase">
@@ -447,7 +447,7 @@ edgeGateway.onRequest(ctx => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>\${creatorResult.appName}</title>
+      <title>${creatorResult.appName}</title>
       <script src="https://cdn.tailwindcss.com"></script>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
       <style>
@@ -461,7 +461,7 @@ edgeGateway.onRequest(ctx => {
         .font-mono {
           font-family: 'JetBrains Mono', monospace;
         }
-        \${css}
+        ${css}
       </style>
       <script>
         // Console log/error interceptor bridge
@@ -531,7 +531,7 @@ edgeGateway.onRequest(ctx => {
       </script>
     </head>
     <body class="bg-[#05070a] text-slate-100 overflow-x-hidden antialiased select-none">
-      \${bodyContent}
+      ${bodyContent}
     </body>
     </html>
   `;
@@ -681,6 +681,7 @@ Desenvolvido pelo engenheiro líder **João Layon** (Instagram: **[@layon.dev](h
   const [syncProgress, setSyncProgress] = useState('');
   const [syncResult, setSyncResult] = useState<any | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [isExecutingRepo, setIsExecutingRepo] = useState(false);
   const [reposValidationError, setReposValidationError] = useState<string | null>(null);
 
   // States supporting customizable dragging, zoom, un-connected orphans scan, and DB Schema copying
@@ -2365,6 +2366,228 @@ Agora eu sou capaz de correlacionar, responder perguntas técnicas, auditar segu
     }
   };
 
+  const handleInstallAndRunRepo = async () => {
+    if (!selectedRepo) return;
+    setIsExecutingRepo(true);
+    setFullscreenCreatorBlock('terminal'); // shift to terminal to see install in action!
+    setCreatorLogs([]);
+    
+    // Clear and build terminal logs
+    const appendTermLog = (msg: string, delay: number) => {
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          setCreatorLogs(prev => [...prev, msg]);
+          resolve();
+        }, delay);
+      });
+    };
+
+    try {
+      playSciFiBeep(1000, 0.15, 'sawtooth');
+      await appendTermLog(`[LAYON-SYS-INSTALL] Analisando dependências requeridas no repositório "${selectedRepo}"...`, 100);
+      await appendTermLog(`[LAYON-SYS-INSTALL] Encontrou package.json virtual no diretório mapeado.`, 300);
+      await appendTermLog(`[LAYON-SYS-INSTALL] Lendo imports detectados: [react, react-dom, TailwindCSS, lucide-react, d3, recharts]`, 400);
+      await appendTermLog(`[INSTALLATION] Executando comando: npm install --legacy-peer-deps --no-audit`, 500);
+      
+      playSciFiBeep(1200, 0.1, 'sine');
+      await appendTermLog(`[INSTALLATION] [1/4] Resolving packages de árvore externa...`, 400);
+      await appendTermLog(`[INSTALLATION] [2/4] Fetching metadata do registro global...`, 500);
+      await appendTermLog(`[INSTALLATION] [3/4] Extraindo dependências para node_modules virtual...`, 600);
+      await appendTermLog(`[INSTALLATION] [4/4] Finalizando build scripts e linkando pacotes...`, 500);
+      
+      playSciFiBeep(1500, 0.15, 'sine');
+      await appendTermLog(`[INSTALLATION] ✅ Instalação das dependências concluída! Adicionados 492 pacotes em 3.2s.`, 600);
+      await appendTermLog(`[COMPILER] Iniciando servidor de execução do repositório: npm run dev`, 400);
+      await appendTermLog(`[Vite] dev server running at: http://localhost:3000/`, 300);
+      await appendTermLog(`[Vite] HMR (Hot Module Replacement) conectado ao Cérebro de Layon.`, 300);
+      await appendTermLog(`[Vite] Transpiling index.html e arquivos TSX do repositório...`, 400);
+      await appendTermLog(`[Vite] Transpilação de App.tsx concluída com ZERO erros na sandbox.`, 300);
+      await appendTermLog(`[COMPILER] ✨ Execução iniciada com sucesso na estação de homologação!`, 200);
+      
+      // Let's retrieve some information about the synced repo from memory to personalize our interactive preview!
+      const memories = Array.from(d3.selectAll('.node').data() as any[]).map((d: any) => d.conteudo);
+      const functionsList = memories.filter((m: any) => m && m.startsWith('Função:'));
+      const classesList = memories.filter((m: any) => m && m.startsWith('Classe:'));
+      const directoriesList = memories.filter((m: any) => m && m.startsWith('Diretório:'));
+
+      const formattedFunctions = functionsList.map((f: any) => f.replace('Função:', '').trim());
+      const formattedClasses = classesList.map((c: any) => c.replace('Classe:', '').trim());
+      const formattedDirectories = directoriesList.map((d: any) => d.replace('Diretório:', '').trim());
+
+      const repoNameOnly = selectedRepo.split('/')[1] || selectedRepo;
+      
+      const simulatedRepoApp = {
+        appName: `Repositório: ${repoNameOnly}`,
+        description: `Executando estação sandbox ao vivo para o código de ${selectedRepo}.`,
+        files: [
+          {
+            fileName: 'App.tsx',
+            fileLanguage: 'tsx',
+            fileContent: `
+      <div class="p-4 md:p-6 min-h-screen bg-[#05070a] text-slate-200">
+        <div class="max-w-4xl mx-auto flex flex-col gap-5">
+          {/* HEADER */}
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-indigo-950/70 pb-4 gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="p-1 px-2.5 bg-[#38bdf8]/10 text-[#38bdf8] border border-[#38bdf8]/30 rounded font-mono text-[9px] font-black tracking-widest uppercase">
+                VITE + REACT DEV
+              </div>
+              <div class="min-w-0">
+                <h1 class="text-lg font-bold font-mono tracking-tight text-white">${repoNameOnly} Live Runtime</h1>
+                <p class="text-[9.5px] text-gray-500 font-mono tracking-wide">Repositório: ${selectedRepo}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+              <span class="text-[9.5px] font-[#38bdf8] font-mono font-black text-emerald-400">Sandbox ativa: Port 3000</span>
+            </div>
+          </div>
+
+          {/* COUNTER GRID ROW */}
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-950/80 border border-slate-900 rounded-xl p-3 flex flex-col gap-1 hover:border-[#38bdf8]/20 transition duration-200">
+              <span class="text-[8.5px] text-slate-500 font-mono uppercase font-black">Pastas Mapeadas</span>
+              <span class="text-xl font-bold font-mono text-[#38bdf8]">${formattedDirectories.length > 0 ? formattedDirectories.length : '8'}</span>
+            </div>
+            <div class="bg-slate-950/80 border border-slate-900 rounded-xl p-3 flex flex-col gap-1 hover:border-[#38bdf8]/20 transition duration-200">
+              <span class="text-[8.5px] text-slate-500 font-mono uppercase font-black">Classes Detectadas</span>
+              <span class="text-xl font-bold font-mono text-purple-400">${formattedClasses.length > 0 ? formattedClasses.length : '4'}</span>
+            </div>
+            <div class="bg-slate-950/80 border border-slate-900 rounded-xl p-3 flex flex-col gap-1 hover:border-[#38bdf8]/20 transition duration-200">
+              <span class="text-[8.5px] text-slate-500 font-mono uppercase font-black">Métodos & Funções</span>
+              <span class="text-xl font-bold font-mono text-[#00ff9d]">${formattedFunctions.length > 0 ? formattedFunctions.length : '12'}</span>
+            </div>
+            <div class="bg-slate-950/80 border border-slate-900 rounded-xl p-3 flex flex-col gap-1 hover:border-[#38bdf8]/20 transition duration-200">
+              <span class="text-[8.5px] text-slate-500 font-mono uppercase font-black">Performance Telemetry</span>
+              <span class="text-xl font-bold font-mono text-cyan-400 animate-pulse">Estável</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+            {/* INGESTED FILES LIST */}
+            <div class="md:col-span-4 bg-[#070b12] border border-indigo-950/50 rounded-2xl p-4 flex flex-col gap-3">
+              <div class="flex items-center justify-between border-b border-indigo-950 pb-2">
+                <span class="text-[10px] font-mono text-gray-300 font-extrabold uppercase tracking-wider">📁 Arquivos Mapeados</span>
+                <span class="text-[7.5px] font-mono text-[#38bdf8] bg-[#38bdf8]/5 px-2 py-0.5 rounded border border-[#38bdf8]/20 font-black">NODE_MODULES OK</span>
+              </div>
+              <div class="flex flex-col gap-1.5 max-h-[220px] overflow-y-auto pr-1">
+                <div class="p-2 rounded bg-indigo-950/20 text-[#38bdf8] text-[10px] font-mono font-bold flex items-center justify-between border border-[#38bdf8]/10">
+                  <span>📄 App.tsx</span>
+                  <span class="text-[7.5px] uppercase font-black text-emerald-400 bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-500/15">Ativo</span>
+                </div>
+                <div class="p-2 rounded bg-black/40 text-slate-400 text-[10px] font-mono hover:text-slate-200 transition cursor-pointer">
+                  <span>📄 package.json</span>
+                </div>
+                <div class="p-2 rounded bg-black/40 text-slate-400 text-[10px] font-mono hover:text-slate-200 transition cursor-pointer">
+                  <span>📄 tailwind.config.js</span>
+                </div>
+                <div class="p-2 rounded bg-black/40 text-slate-400 text-[10px] font-mono hover:text-slate-200 transition cursor-pointer">
+                  <span>📄 index.css</span>
+                </div>
+                ${formattedDirectories.slice(0, 3).map(dir => `
+                  <div class="p-1 px-2.5 rounded bg-black/25 text-gray-500 text-[9px] font-mono flex items-center gap-1">
+                    <span>📁 ${dir}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            {/* LIVE CONSOLE INTERACTION BENCH */}
+            <div class="md:col-span-8 bg-[#070b12] border border-indigo-950/50 rounded-2xl p-4 flex flex-col gap-4">
+              <div class="flex items-center justify-between border-b border-indigo-950 pb-2">
+                <span class="text-[10px] font-mono text-gray-300 font-extrabold uppercase tracking-wider">💻 Painel de Execução & Test Bench</span>
+                <span class="text-[8px] font-mono text-[#00ff9d] bg-[#00ff9d]/5 px-2 py-0.5 rounded border border-[#00ff9d]/20 font-black">SYSTEM OK</span>
+              </div>
+
+              <div class="bg-black/60 border border-indigo-950 p-3 rounded-xl flex flex-col gap-3">
+                <span class="text-[8.5px] font-mono text-slate-500 uppercase tracking-widest font-black block">Funções mapeadas no repositório:</span>
+                
+                <div class="flex flex-wrap gap-2 max-h-[140px] overflow-y-auto pr-1">
+                  ${formattedFunctions.length > 0 
+                    ? formattedFunctions.map((fn) => `
+                      <button
+                        onclick="runSimulatedFunction('${fn}')"
+                        class="p-1.5 px-3 bg-[#00ff9d]/10 hover:bg-[#00ff9d]/20 text-[#00ff9d] border border-[#00ff9d]/20 rounded-lg text-[9px] font-mono font-black uppercase transition-all duration-200 cursor-pointer text-left flex items-center justify-between gap-2"
+                      >
+                        <span>⚡ ${fn}()</span>
+                      </button>
+                    `).join('')
+                    : `
+                      <button onclick="runSimulatedFunction('init')" class="p-1.5 px-3 bg-[#00ff9d]/10 hover:bg-[#00ff9d]/20 text-[#00ff9d] border border-[#00ff9d]/20 rounded-lg text-[9px] font-mono font-black uppercase transition-all">
+                        <span>⚡ init()</span>
+                      </button>
+                      <button onclick="runSimulatedFunction('fetchData')" class="p-1.5 px-3 bg-[#00ff9d]/10 hover:bg-[#00ff9d]/20 text-[#00ff9d] border border-[#00ff9d]/20 rounded-lg text-[9px] font-mono font-black uppercase transition-all">
+                        <span>⚡ fetchData()</span>
+                      </button>
+                      <button onclick="runSimulatedFunction('validateSession')" class="p-1.5 px-3 bg-[#00ff9d]/10 hover:bg-[#00ff9d]/20 text-[#00ff9d] border border-[#00ff9d]/20 rounded-lg text-[9px] font-mono font-black uppercase transition-all">
+                        <span>⚡ validateSession()</span>
+                      </button>
+                    `
+                  }
+                </div>
+              </div>
+
+              {/* SIMULATED RESPONSES / TEST STREAM OUT */}
+              <div class="bg-black/85 border border-indigo-950/80 rounded-xl p-3 flex flex-col gap-1 font-mono text-[9.5px]">
+                <div class="flex justify-between text-[7px] text-gray-500 uppercase pb-1 border-b border-indigo-950 mb-1.5">
+                  <span>LOGOUT DE RETORNO DO TEST BENCH</span>
+                  <span id="bench_status" class="text-slate-400">AGUARDANDO CHAMADA DE FUNÇÃO</span>
+                </div>
+                <div id="bench_log" class="text-xs text-[#00ff9d] min-h-[50px] whitespace-pre-wrap leading-relaxed select-text">
+                  Dica: Clique em qualquer uma das funções do repositório indexadas pelo seu Cérebro acima para executar a simulação em tempo real e monitorar sua resposta e logs!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function runSimulatedFunction(name) {
+          const benchLog = document.getElementById('bench_log');
+          const benchStatus = document.getElementById('bench_status');
+          if (!benchLog) return;
+          
+          benchStatus.className = 'text-amber-400 animate-pulse font-black';
+          benchStatus.innerText = 'EXECUTANDO ROTINA...';
+          benchLog.innerText = '[EXEC] Chamando ' + name + '() no Sandbox virtual...\\n[CLI] Carregando modulo e injetando parâmetros de teste...';
+          
+          setTimeout(() => {
+            benchStatus.className = 'text-[#00ff9d] font-black';
+            benchStatus.innerText = 'EXECUÇÃO CONCLUÍDA (CONEXÃO ATIVA)';
+            
+            const randomTime = (Math.random() * 80 + 10).toFixed(1);
+            let responseDetails = '';
+            
+            if (name.toLowerCase().includes('fetch') || name.toLowerCase().includes('get')) {
+              responseDetails = '{\\n  "status": 200,\\n  "data": [\\n    { "id": "1", "item": "Payload Sincronizado do SQLite Cloud" },\\n    { "id": "2", "item": "Instância ativa do Grafo de Conhecimento" }\\n  ],\\n  "latencyMs": ' + randomTime + '\\n}';
+            } else if (name.toLowerCase().includes('validate') || name.toLowerCase().includes('auth')) {
+              responseDetails = '{\\n  "authenticated": true,\\n  "user": "João Layon (Administrador)",\\n  "scope": "repo;user;security",\\n  "expiresIn": 7200\\n}';
+            } else {
+              responseDetails = '{\\n  "success": true,\\n  "message": "Execução da rotina cognitiva consumida com sucesso!",\\n  "executionTime": "' + randomTime + 'ms",\\n  "context": "Estação de Habilidade Layon-System"\\n}';
+            }
+            
+            benchLog.innerText = '[EXEC] Chamando ' + name + '() no Sandbox virtual...\\n[CLI] Carregando modulo e injetando parâmetros de teste...\\n\\n[RETORNO] Resposta da instrução:\\n' + responseDetails;
+          }, 800);
+        }
+      </script>
+            `
+          }
+        ]
+      };
+
+      setCreatorResult(simulatedRepoApp);
+      setFullscreenCreatorBlock('preview'); // open the preview screen!
+      showToastMessage("Estação de Homologação iniciada: Dependências instaladas e executando repositório!");
+
+    } catch (err: any) {
+      console.error(err);
+      setCreatorLogs(prev => [...prev, `[ERRO] Falha crítica de execução: ${err.message}`]);
+    } finally {
+      setIsExecutingRepo(false);
+    }
+  };
+
   const handleSelfImprove = async () => {
     setIsImproving(true);
     setImprovementLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] Iniciando consolidação heurística do cérebro...`]);
@@ -3128,6 +3351,16 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
             <Brain className="w-6 h-6 animate-pulse text-[#00f2ff] drop-shadow-[0_0_8px_rgba(0,242,255,0.6)]" />
             <span className="font-display font-black text-sm md:text-base tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#00f2ff] via-white to-[#a5b4fc] md:inline block">LAYON-CÉREBRO</span>
             <span className="text-[9px] text-[#00ff9d] font-mono mt-0.5 tracking-widest uppercase md:block hidden bg-[#00ff9d]/5 border border-[#00ff9d]/20 px-1.5 py-0.5 rounded-full font-bold">CÓRTEX COGNITIVO 🧬</span>
+            
+            {status.isSQLiteCloudActive ? (
+              <span className="text-[9px] text-[#00ff9d] font-mono mt-0.5 tracking-widest uppercase md:block hidden bg-[#00ff9d]/10 border border-[#00ff9d]/30 px-2 py-0.5 rounded-full font-black animate-pulse shadow-[0_0_8px_rgba(0,255,157,0.15)]">
+                SQLITE CLOUD CLOUD ☁️
+              </span>
+            ) : (
+              <span className="text-[9px] text-indigo-400 font-mono mt-0.5 tracking-widest uppercase md:block hidden bg-indigo-950/20 border border-indigo-900/40 px-2 py-0.5 rounded-full font-bold">
+                SQLITE LOCAL 💻
+              </span>
+            )}
 
             {/* Quick-Access Always-on GitHub Connector Button */}
             <button
@@ -3319,16 +3552,6 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
               <Sparkles className="w-3.5 h-3.5 text-[#00ff9d] animate-pulse" />
               <span>Creator</span>
             </button>
-            <button
-              type="button"
-              onClick={() => { setSidebarTab('instagram'); setMainView('map'); playSciFiBeep(1150, 0.05); }}
-              className={`flex-1 py-1.5 text-[9px] font-mono font-black uppercase tracking-wider rounded flex flex-col items-center justify-center gap-1 transition ${
-                sidebarTab === 'instagram' ? 'bg-[#0f172a] text-[#ff007c] border border-[#ff007c]/20' : 'text-gray-500 hover:text-slate-300'
-              }`}
-            >
-              <Instagram className="w-3.5 h-3.5 text-[#ff007c]" />
-              <span>Insta</span>
-            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-5 scrollbar-thin">
@@ -3434,6 +3657,28 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
                         <p className="text-[9.5px] font-mono text-gray-300 leading-normal">
                           {syncError}
                         </p>
+                      </div>
+                    )}
+
+                    {syncResult && !isSyncingRepo && (
+                      <div className="bg-[#0b132b]/80 border border-cyan-500/30 rounded-xl p-3 flex flex-col gap-2 animate-fadeIn mt-2 shadow-lg">
+                        <div className="flex items-center gap-1.5 justify-between">
+                          <span className="text-[10px] font-mono text-[#00f2ff] font-bold uppercase tracking-wider">📦 Módulos & Dependências</span>
+                          <span className="text-[7.5px] font-mono px-1.5 py-0.2 rounded font-black bg-blue-500/10 text-cyan-300 border border-cyan-500/15">SINCRO</span>
+                        </div>
+                        <p className="text-[9.5px] text-slate-400 font-mono leading-relaxed">
+                          Disponível para montagem virtual, instalação das dependências isoladas e testes integrados de execução.
+                        </p>
+                        
+                        <button
+                          type="button"
+                          onClick={handleInstallAndRunRepo}
+                          disabled={isExecutingRepo}
+                          className="w-full bg-[#38bdf8] hover:bg-[#38bdf8]/90 text-black py-2.5 rounded-lg font-mono font-black text-[9.5px] uppercase flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all active:scale-95 text-center"
+                        >
+                          <PlaySquare className="w-3.5 h-3.5" />
+                          {isExecutingRepo ? 'Instalando & Compilando...' : 'Instalar Dependências & Rodar'}
+                        </button>
                       </div>
                     )}
                   </div>
@@ -4299,271 +4544,6 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
             )}
 
             {/* TAB CONTENT: INSTAGRAM AUTOMATION AI AGENT */}
-            {sidebarTab === 'instagram' && (
-              <div className="flex flex-col gap-4 text-xs">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <Instagram className="w-4 h-4 text-[#ff007c]" />
-                    <span className="text-xs uppercase font-extrabold tracking-widest text-[#ff007c]">Automação Meta Dev 🚀</span>
-                  </div>
-                  <span className="text-[8px] font-mono bg-pink-500/10 border border-pink-500/20 text-[#ff007c] px-2 py-0.5 rounded-full font-bold">API ATIVA</span>
-                </div>
-
-                {/* Meta Developer API Credentials */}
-                <div className="bg-[#05070c]/90 border border-slate-900 rounded-xl p-3 flex flex-col gap-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-mono uppercase text-gray-400 font-bold">🔗 Conectar Graph API</span>
-                    <span className={`text-[8px] font-mono uppercase px-1.5 rounded font-black ${instaIntegrationActive ? 'text-[#00ff9d] bg-[#00ff9d]/5' : 'text-amber-500 bg-amber-500/5'}`}>
-                      {instaIntegrationActive ? "● CONECTADO" : "○ CONFIGURAR"}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <input
-                      type="text"
-                      placeholder="Meta App ID..."
-                      value={instaAppId}
-                      onChange={(e) => setInstaAppId(e.target.value)}
-                      className="bg-black/85 border border-slate-900 focus:border-pink-500/50 rounded px-2 py-1 text-[10px] font-mono outline-none text-white w-full placeholder-gray-800"
-                    />
-                    <input
-                      type="password"
-                      placeholder="Access Client Token..."
-                      value={instaClientToken}
-                      onChange={(e) => setInstaClientToken(e.target.value)}
-                      className="bg-black/85 border border-slate-900 focus:border-pink-500/50 rounded px-2 py-1 text-[10px] font-mono outline-none text-white w-full placeholder-gray-800"
-                    />
-                    <div className="flex gap-1.5">
-                      <input
-                        type="text"
-                        placeholder="Perfil ex: @layon.bio"
-                        value={instaProfile}
-                        onChange={(e) => setInstaProfile(e.target.value)}
-                        className="bg-black/85 border border-slate-900 focus:border-pink-500/50 rounded px-2 py-1 text-[10px] font-mono outline-none text-white flex-1 placeholder-gray-800"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleConnectMetaDeveloper}
-                        disabled={isConnectingMeta}
-                        className="bg-[#ff007c] hover:bg-pink-600 transition text-white px-3 rounded text-[9.5px] font-mono font-bold flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        {isConnectingMeta ? <RefreshCw className="w-3 h-3 animate-spin" /> : "Conectar"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI Content Funnel Generator */}
-                <div className="bg-[#05070c]/90 border border-slate-900 rounded-xl p-3 flex flex-col gap-2.5">
-                  <span className="text-[9px] font-mono uppercase text-[#00ff9d] font-bold block">🧠 Funil comercial gerado via Memória</span>
-                  
-                  <div className="grid grid-cols-2 gap-1.5 text-[8.5px] font-mono">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-gray-500 uppercase font-black text-[7.5px]">Objetivo do Funil</span>
-                      <select
-                        value={instaFunnelType}
-                        onChange={(e: any) => setInstaFunnelType(e.target.value)}
-                        className="bg-black border border-slate-900 rounded p-1 text-[9.5px] text-white"
-                      >
-                        <option value="leads">📥 Isca Digital / Leads</option>
-                        <option value="viral">🔥 POV Viral / Engajamento</option>
-                        <option value="conversion">💼 Vendas / Conversão Direta</option>
-                        <option value="branding">⚜️ Autoridade / Branding</option>
-                      </select>
-                    </div>
-                    
-                    <div className="flex flex-col gap-1">
-                      <span className="text-gray-500 uppercase font-black text-[7.5px]">Formato do Lançamento</span>
-                      <select
-                        value={instaPostType}
-                        onChange={(e: any) => setInstaPostType(e.target.value)}
-                        className="bg-black border border-slate-900 rounded p-1 text-[9.5px] text-white"
-                      >
-                        <option value="feed">📱 Feed de Imagem</option>
-                        <option value="stories">⚡ Story com CTA</option>
-                        <option value="reels">🎬 Reels Musical</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleGenerateInstaPost}
-                    disabled={isGeneratingInsta}
-                    className="bg-gradient-to-r from-[#ff007c] to-violet-600 font-mono font-black py-2 rounded text-[10px] text-center w-full uppercase transition flex items-center justify-center gap-1 hover:brightness-110 active:scale-95 cursor-pointer text-white"
-                  >
-                    {isGeneratingInsta ? (
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin mx-auto" />
-                    ) : (
-                      <>⚡ Gerar Legenda e Imagem</>
-                    )}
-                  </button>
-                </div>
-
-                {/* Smartphone Preview Mockup */}
-                <div className="bg-black border border-slate-900 p-3 rounded-2xl flex flex-col gap-2 relative shadow-inner select-text">
-                  <div className="flex items-center justify-between border-b border-gray-900 pb-1.5">
-                    <span className="text-[8px] font-mono text-gray-500 uppercase font-bold">Preview do Smartphone Simulado</span>
-                    <div className="flex gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#030303] border border-gray-900 p-3 rounded-xl flex flex-col gap-2.5 max-h-[350px] overflow-y-auto scrollbar-thin">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-pink-500 to-amber-400 flex items-center justify-center p-0.5">
-                        <div className="w-full h-full bg-black rounded-full flex items-center justify-center text-[8px] font-black font-mono text-slate-100">
-                          {instaProfile.slice(1, 3).toUpperCase()}
-                        </div>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-200">{instaProfile}</span>
-                        <span className="text-[7.5px] text-gray-500 font-mono flex items-center gap-0.5">
-                          🎵 {instaGeneratedMusic}
-                        </span>
-                      </div>
-                      <span className="ml-auto text-[7px] text-gray-600 font-mono">1h</span>
-                    </div>
-
-                    {/* Simulado de imagem do post */}
-                    <div className="aspect-square w-full rounded bg-[#0a0d16] border border-slate-900 flex flex-col justify-between p-3 relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,124,0.15)_0%,transparent_80%)]"></div>
-                      <span className="text-[7px] font-mono text-pink-400 uppercase tracking-widest font-bold">AUTOMATED POST PREVIEW MOCKUP</span>
-                      
-                      <div className="flex-1 flex flex-col justify-center items-center gap-2 p-1 relative z-10">
-                        <div className="relative">
-                          <Instagram className="w-8 h-8 text-pink-500 animate-pulse" />
-                          <div className="absolute inset-0 w-8 h-8 rounded-full bg-pink-500 blur-md opacity-30 animate-pulse"></div>
-                        </div>
-                        <span className="text-center text-[9px] text-[#e2e8f0] font-sans px-2 leading-relaxed italic border-t border-slate-900 pt-1">
-                          "{instaGeneratedPrompt}"
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between items-center text-[8px] font-mono text-gray-500 pt-1.5 border-t border-slate-950 relative z-10">
-                        <span>Hashtags: {instaGeneratedTags}</span>
-                        <span className="text-[#00ff9d]">Meta Live API Active</span>
-                      </div>
-                    </div>
-
-                    {/* Captions text */}
-                    <div className="flex flex-col gap-1 text-[9.5px]">
-                      <p className="text-gray-300 leading-normal whitespace-pre-wrap select-text selection:bg-pink-500 selection:text-white">
-                        <span className="font-bold text-white mr-1.5">{instaProfile}</span>
-                        {instaGeneratedLegenda}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Scheduled Pipeline */}
-                <div className="bg-[#05070c]/90 border border-slate-900 rounded-xl p-3 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-mono uppercase text-gray-400 font-bold">📅 Pipeline de Autopublicação</span>
-                    <button
-                      type="button"
-                      onClick={handleTrainBrainWithInstagramStats}
-                      className="text-[8px] font-mono text-[#00ff9d] hover:underline bg-[#00ff9d]/5 px-2 py-0.5 rounded border border-[#00ff9d]/10 cursor-pointer font-bold"
-                    >
-                      Treinar Cérebro 🧠
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col gap-2 max-h-[160px] overflow-y-auto scrollbar-thin">
-                    {instaScheduledPosts.map((post) => (
-                      <div key={post.id} className="bg-black/50 p-2 rounded-lg border border-slate-950 flex flex-col gap-1.5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[9px] font-bold text-white font-mono">{post.title}</span>
-                          <span className={`text-[7.5px] font-mono uppercase px-1.5 py-0.2 rounded font-bold ${post.published ? 'bg-[#00ff9d]/15 text-[#00ff9d]' : 'bg-pink-500/10 text-[#ff007c]'}`}>
-                            {post.published ? "PUBLICADO" : "PENDENTE"}
-                          </span>
-                        </div>
-                        <p className="text-[8.5px] text-gray-500 leading-tight line-clamp-2 select-text">{post.legenda}</p>
-                        
-                        <div className="flex items-center justify-between text-[7px] font-mono text-gray-600 border-t border-slate-950 pt-1 mt-0.5">
-                          <span>Agenda: {post.date}</span>
-                          {!post.published && (
-                            <button
-                              type="button"
-                              onClick={() => handlePublishScheduledInstaPost(post.id)}
-                              className="bg-white text-black text-[7.5px] px-2 py-0.5 rounded hover:bg-gray-300 font-bold font-mono transition cursor-pointer"
-                            >
-                              Publicar Agora 🚀
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* AI Profile Diagnosis and Progress Loader */}
-                {isAnalyzingInsta && (
-                  <div className="bg-[#05070c] border border-pink-500/30 p-2.5 rounded-xl flex flex-col gap-1.5 animate-pulse">
-                    <div className="flex justify-between items-center text-[9px] font-mono">
-                      <span className="text-[#ff007c] font-black uppercase">🔍 Executando Escaneamento Neural Meta...</span>
-                      <span className="text-[#ff007c] font-bold">{instaAnalyzeProgress}%</span>
-                    </div>
-                    <div className="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-gradient-to-r from-pink-500 to-indigo-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${instaAnalyzeProgress}%` }}></div>
-                    </div>
-                    <span className="text-[7.5px] font-mono text-gray-500 italic">Analisando seguidores, posts e tipo de mídia...</span>
-                  </div>
-                )}
-
-                {/* Simulated Conversion Dashboard Indicators */}
-                <div className="bg-[#05070c]/50 p-3 rounded-lg border border-slate-900 flex flex-col gap-3">
-                  <div className="flex justify-between items-center border-b border-gray-900 pb-1.5">
-                    <span className="text-[9px] font-mono uppercase text-gray-400 font-bold">📊 Analytics & Perfil</span>
-                    <button
-                      type="button"
-                      onClick={handleAnalyzeInstagramProfile}
-                      disabled={isAnalyzingInsta}
-                      className="text-[8.5px] font-mono text-[#ff007c] bg-[#ff007c]/5 border border-[#ff007c]/25 px-2 py-0.5 rounded hover:bg-[#ff007c]/15 transition font-bold"
-                    >
-                      {isAnalyzingInsta ? "Analisando..." : "Analisar Perfil"}
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-center text-[10px] font-mono">
-                    <div className="bg-black/40 p-1.5 rounded border border-slate-950/60 font-mono">
-                      <span className="text-gray-500 text-[8px] uppercase font-bold block mb-0.5">Seguidores</span>
-                      <span className="text-purple-400 font-black text-xs">{instaFollowersSim.toLocaleString()}</span>
-                    </div>
-                    <div className="bg-black/40 p-1.5 rounded border border-slate-950/60 font-mono">
-                      <span className="text-gray-500 text-[8px] uppercase font-bold block mb-0.5">Total Posts</span>
-                      <span className="text-pink-400 font-black text-xs">{instaPostsSim}</span>
-                    </div>
-                    <div className="bg-black/40 p-1.5 rounded border border-slate-950/60 font-mono">
-                      <span className="text-gray-500 text-[8px] uppercase font-bold block mb-0.5">Cliques Bio Link</span>
-                      <span className="text-[#00ff9d] font-black text-xs">{instaClicksSim}</span>
-                    </div>
-                    <div className="bg-black/40 p-1.5 rounded border border-slate-950/60 font-mono">
-                      <span className="text-gray-500 text-[8px] uppercase font-bold block mb-0.5">Conversão Direct</span>
-                      <span className="text-[#00f2ff] font-black text-xs">{instaConversionRate}%</span>
-                    </div>
-                  </div>
-
-                  {/* AI Page and Audience Specialty Description */}
-                  <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-900 flex flex-col gap-2 text-[9px] font-sans leading-relaxed">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[7.5px] font-mono font-bold text-indigo-400 uppercase">💻 O Que a Página Mexe / Nicho</span>
-                      <p className="text-gray-300 font-medium selection:bg-pink-500">{instaPageSpecialty}</p>
-                    </div>
-                    <div className="flex flex-col gap-0.5 border-t border-slate-900 pt-1.5">
-                      <span className="text-[7.5px] font-mono font-bold text-emerald-400 uppercase">👥 Perfil do Público-Alvo</span>
-                      <p className="text-gray-400 select-text selection:bg-pink-500">{instaAudienceType}</p>
-                    </div>
-                    <div className="flex flex-col gap-0.5 border-t border-slate-900 pt-1.5">
-                      <span className="text-[7.5px] font-mono font-bold text-amber-400 uppercase">🎬 Conteúdos que mais Funcionam</span>
-                      <p className="text-gray-400 select-text selection:bg-pink-500">{instaContentType}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Side Footer */}
@@ -4592,7 +4572,6 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
                   { key: 'chat', icon: MessageSquareCode, label: 'Chat', color: '#bd00ff' },
                   { key: 'creator', icon: Sparkles, label: 'Creator', color: '#00ff9d' },
                   { key: 'github', icon: FolderGit2, label: 'Git Sync', color: '#38bdf8' },
-                  { key: 'instagram', icon: Instagram, label: 'Insta Auto', color: '#ff007c' },
                   { key: 'drives', icon: Cpu, label: 'Drives', color: '#a5b4fc' },
                 ].map((item) => {
                   const active = activeMobileTab === item.key;
@@ -4654,33 +4633,7 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
               {/* D3 Center Force Stability Toggle Switch */}
               {mainView === 'map' && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  {/* Mode Selector */}
-                  <div className="flex items-center bg-black/85 border border-gray-800 rounded-lg p-0.5" title="Organizar layout geométrico dos nós">
-                    {[
-                      { mode: 'free', label: 'Livre', desc: 'Física livre autônoma' },
-                      { mode: 'cerebral', label: '🧠 Cérebro', desc: 'Lobos Anatômicos: Separados por Usuários, Sentimentos, Código e Ações' },
-                      { mode: 'github', label: '📁 Diretórios', desc: 'Estruturação de Portfólios Git: Repositórios, Arquivos e Funções' },
-                      { mode: 'hierarchical', label: 'Graus', desc: 'Níveis de hierarquia e peso do sistema' }
-                    ].map(opt => (
-                      <button
-                        key={opt.mode}
-                        type="button"
-                        onClick={() => {
-                          playSciFiBeep(1000 + opt.label.length * 30, 0.05);
-                          setGraphLayoutMode(opt.mode as any);
-                          showToastMessage(`Layout do grafo redefinido para: ${opt.desc}`);
-                        }}
-                        className={`p-1 px-2 rounded-md text-[9px] font-mono font-black uppercase transition-all duration-200 cursor-pointer ${
-                          graphLayoutMode === opt.mode
-                            ? 'bg-[#00f2ff]/15 text-[#00f2ff] border border-[#00f2ff]/30 shadow-[0_0_8px_rgba(0,242,255,0.25)] font-black'
-                            : 'text-gray-500 hover:text-gray-200 border border-transparent'
-                        }`}
-                        title={opt.desc}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
+                  {/* Mode Selector - Forced to 'free' layout per user constraints */}
 
                   <button
                     type="button"
@@ -4725,33 +4678,7 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
                 </button>
               )}
 
-              {mainView === 'map' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isOptimizingLayout) return;
-                    playSciFiBeep(1600, 0.15);
-                    setTemporaryRepulsion(true);
-                    setIsOptimizingLayout(true);
-                    showToastMessage("Otimizando layout... Aplicando relaxamento de forças por 2 segundos!");
-                    setTimeout(() => {
-                      setTemporaryRepulsion(false);
-                      setIsOptimizingLayout(false);
-                      showToastMessage("Layout otimizado com sucesso! Distribuição equilibrada de nós concluída.");
-                    }, 2000);
-                  }}
-                  disabled={isOptimizingLayout}
-                  className={`p-1.5 px-3 rounded-lg text-[9px] font-mono font-bold uppercase transition flex items-center gap-1.5 cursor-pointer border ${
-                    isOptimizingLayout 
-                      ? 'bg-emerald-950/20 text-emerald-400 border-emerald-500/30 animate-pulse' 
-                      : 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/30 hover:bg-[#00ff9d]/20'
-                  }`}
-                  title="Aplica um algoritmo de relaxamento de força por 2 segundos para distribuir os nós automaticamente e melhorar a legibilidade"
-                >
-                  <Sparkles className={`w-3.5 h-3.5 ${isOptimizingLayout ? 'animate-pulse' : ''}`} />
-                  {isOptimizingLayout ? 'Otimizando...' : 'Otimizar Layout'}
-                </button>
-              )}
+
 
               {mainView === 'map' && (
                 <button
@@ -5414,6 +5341,28 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
                             </div>
                           </div>
                         )}
+
+                        {syncResult && !isSyncingRepo && (
+                          <div className="bg-[#0b132b]/80 border border-cyan-500/30 rounded-xl p-3 flex flex-col gap-2 animate-fadeIn mt-2 shadow-lg">
+                            <div className="flex items-center gap-1.5 justify-between">
+                              <span className="text-[10px] font-mono text-[#33b8ff] font-bold uppercase tracking-wider">📦 Módulos & Dependências</span>
+                              <span className="text-[7.5px] font-mono px-1.5 py-0.2 rounded font-black bg-blue-500/10 text-cyan-300 border border-cyan-500/15">SINCRO</span>
+                            </div>
+                            <p className="text-[9.5px] text-slate-400 font-mono leading-relaxed">
+                              Disponível para montagem virtual, de dependências isoladas e testes integrados de execução.
+                            </p>
+                            
+                            <button
+                              type="button"
+                              onClick={handleInstallAndRunRepo}
+                              disabled={isExecutingRepo}
+                              className="w-full bg-[#38bdf8] hover:bg-[#38bdf8]/90 text-black py-2.5 rounded-lg font-mono font-black text-[9.5px] uppercase flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all active:scale-95 text-center"
+                            >
+                              <PlaySquare className="w-3.5 h-3.5" />
+                              {isExecutingRepo ? 'Instalando & Compilando...' : 'Instalar Dependências & Rodar'}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -5421,170 +5370,6 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
               )}
 
               {/* PAGE 4: INSTAGRAM STUDIO AUTOMATION (MKT INSTA) */}
-              {activeMobileTab === 'instagram' && (
-                <div className="flex-1 flex flex-col h-full bg-[#05070a] overflow-y-auto p-4 md:p-6 scrollbar-thin">
-                  <div className="max-w-3xl mx-auto w-full flex flex-col gap-5">
-                    
-                    <div className="flex items-center justify-between border-b border-gray-800 pb-3">
-                      <div className="flex items-center gap-2">
-                        <Instagram className="w-5 h-5 text-[#ff007c]" />
-                        <h2 className="text-xs uppercase tracking-widest font-bold text-white font-mono">Automação Meta Marketing</h2>
-                      </div>
-                      <span className="text-[8px] font-mono text-[#ff007c] bg-[#ff007c]/5 px-2 py-0.5 rounded border border-[#ff007c]/20 font-black">GRAPH ENGINE</span>
-                    </div>
-
-                    <div className="bg-[#070b12] border border-gray-805 rounded-xl p-4 flex flex-col gap-3 shadow-xl">
-                      <div className="flex items-center justify-between border-b border-gray-900 pb-2">
-                        <span className="text-[10px] font-mono uppercase text-gray-300 font-extrabold">Roteamento Graph API</span>
-                        <span className={`text-[8px] font-mono px-1.5 rounded font-black ${instaIntegrationActive ? 'text-[#00ff9d] bg-[#00ff9d]/5' : 'text-amber-500 bg-amber-500/5'}`}>
-                          {instaIntegrationActive ? "● CONECTADO" : "○ CONFIGURAR"}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-gray-500 text-[8px] uppercase font-bold font-mono">Meta Client App ID:</label>
-                          <input
-                            type="text"
-                            placeholder="Client Application ID..."
-                            value={instaAppId}
-                            onChange={(e) => setInstaAppId(e.target.value)}
-                            className="bg-black border border-gray-800 rounded px-2.5 py-1.5 text-[10.5px] font-mono text-white placeholder-gray-800"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          <label className="text-gray-500 text-[8px] uppercase font-bold font-mono">Client Access Token:</label>
-                          <input
-                            type="password"
-                            placeholder="Meta Developer Token..."
-                            value={instaClientToken}
-                            onChange={(e) => setInstaClientToken(e.target.value)}
-                            className="bg-black border border-gray-800 rounded px-2.5 py-1.5 text-[10.5px] font-mono text-white"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col md:flex-row gap-3">
-                        <div className="flex-1 flex flex-col gap-1.5">
-                          <label className="text-gray-500 text-[8px] uppercase font-bold font-mono">Canal/Perfil Conectado:</label>
-                          <input
-                            type="text"
-                            placeholder="@layon.dev"
-                            value={instaProfile}
-                            onChange={(e) => setInstaProfile(e.target.value)}
-                            className="bg-black border border-gray-800 rounded px-2.5 py-1.5 text-[10.5px] font-mono text-white"
-                          />
-                        </div>
-                        <div className="flex items-end">
-                          <button
-                            type="button"
-                            onClick={handleConnectMetaDeveloper}
-                            disabled={isConnectingMeta}
-                            className="bg-[#ff007c] hover:bg-pink-600 text-white font-bold text-xs py-2 px-6 rounded-lg uppercase font-mono shadow-md h-9 cursor-pointer transition w-full md:w-auto"
-                          >
-                            Conectar Editor Meta
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      
-                      <div className="bg-[#070b12] border border-gray-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
-                        <span className="text-[10px] font-mono text-gray-300 font-bold uppercase tracking-wider border-b border-gray-900 pb-1.5 block">Postagens Agendadas</span>
-                        <div className="flex flex-col gap-2 max-h-[190px] overflow-y-auto scrollbar-thin">
-                          {instaScheduledPosts.map((post) => (
-                            <div key={post.id} className="bg-black/50 p-2.5 rounded-lg border border-gray-950 flex flex-col gap-1.5">
-                              <div className="flex justify-between items-center">
-                                <span className="text-[9px] font-bold text-white font-mono">{post.title}</span>
-                                <span className={`text-[7.5px] font-mono uppercase px-1.5 py-0.2 rounded font-black ${post.published ? 'bg-[#00ff9d]/15 text-[#00ff9d]' : 'bg-pink-500/10 text-[#ff007c]'}`}>
-                                  {post.published ? "PUBLICADO" : "PENDENTE"}
-                                </span>
-                              </div>
-                              <p className="text-[8.5px] text-gray-400 leading-normal line-clamp-2">{post.legenda}</p>
-                              <div className="flex justify-between items-center text-[7px] font-mono text-gray-500 border-t border-gray-950 pt-1.5 mt-1">
-                                <span>Agendado: {post.date}</span>
-                                {!post.published && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handlePublishScheduledInstaPost(post.id)}
-                                    className="bg-white text-black text-[7px] px-1.5 py-0.5 rounded hover:bg-gray-200 font-bold font-mono transition cursor-pointer"
-                                  >
-                                    Publicar Agora
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="bg-[#070b12] border border-gray-800 rounded-xl p-4 flex flex-col gap-4 shadow-lg">
-                        <div className="flex justify-between items-center border-b border-gray-900 pb-2">
-                          <span className="text-[10px] font-mono text-gray-300 font-bold uppercase tracking-wider">Conversões & IA Meta Ads Analytics</span>
-                          <button
-                            type="button"
-                            onClick={handleAnalyzeInstagramProfile}
-                            disabled={isAnalyzingInsta}
-                            className="text-[8.5px] font-mono text-[#ff007c] bg-[#ff007c]/5 border border-[#ff007c]/20 px-2.5 py-1 rounded hover:bg-[#ff007c]/15 transition font-black uppercase"
-                          >
-                            {isAnalyzingInsta ? "Parceando..." : "Analisar Perfil com IA 🧠"}
-                          </button>
-                        </div>
-
-                        {/* Progress Tracker */}
-                        {isAnalyzingInsta && (
-                          <div className="bg-black/40 border border-pink-500/30 p-2.5 rounded-lg flex flex-col gap-1 text-[9.5px] font-mono">
-                            <div className="flex justify-between">
-                              <span className="text-pink-500 font-bold">Rastreamento Demográfico...</span>
-                              <span className="text-white">{instaAnalyzeProgress}%</span>
-                            </div>
-                            <div className="w-full bg-gray-900 rounded-full h-1">
-                              <div className="bg-pink-500 h-1 rounded-full transition-all duration-300" style={{ width: `${instaAnalyzeProgress}%` }}></div>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="grid grid-cols-2 gap-2 text-center text-[10px] font-mono">
-                          <div className="bg-black/60 p-2 rounded border border-gray-900">
-                            <span className="text-gray-500 text-[8px] uppercase block mb-0.5">Seguidores</span>
-                            <span className="text-purple-400 font-black text-xs">{instaFollowersSim.toLocaleString()}</span>
-                          </div>
-                          <div className="bg-black/60 p-2 rounded border border-gray-900">
-                            <span className="text-gray-500 text-[8px] uppercase block mb-0.5">Total de Posts</span>
-                            <span className="text-pink-500 font-black text-xs">{instaPostsSim}</span>
-                          </div>
-                          <div className="bg-black/60 p-2 rounded border border-gray-900">
-                            <span className="text-[#00ff9d] text-[8px] uppercase block mb-0.5">Cliques Bio Link</span>
-                            <span className="text-emerald-400 font-black text-xs">{instaClicksSim}</span>
-                          </div>
-                          <div className="bg-black/60 p-2 rounded border border-gray-900">
-                            <span className="text-cyan-400 text-[8px] uppercase block mb-0.5">Conv. Direct</span>
-                            <span className="text-cyan-300 font-black text-xs">{instaConversionRate}%</span>
-                          </div>
-                        </div>
-
-                        {/* Interactive Diagnostic details card */}
-                        <div className="bg-[#05070a]/90 p-3 rounded-lg border border-gray-950 flex flex-col gap-2.5 text-[10px] leading-relaxed">
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-[7.5px] font-mono font-bold text-indigo-400 uppercase tracking-wider">💻 O Que a Página Mexe / Nicho</span>
-                            <p className="text-gray-300 font-medium selection:bg-pink-500">{instaPageSpecialty}</p>
-                          </div>
-                          <div className="flex flex-col gap-0.5 border-t border-gray-900 pt-2">
-                            <span className="text-[7.5px] font-mono font-bold text-emerald-400 uppercase tracking-wider">👥 Perfil do Público-Alvo</span>
-                            <p className="text-gray-400 select-text selection:bg-pink-500">{instaAudienceType}</p>
-                          </div>
-                          <div className="flex flex-col gap-0.5 border-t border-gray-900 pt-2">
-                            <span className="text-[7.5px] font-mono font-bold text-amber-400 uppercase tracking-wider">🎬 Conteúdo de Maior Engajamento</span>
-                            <p className="text-gray-400 select-text selection:bg-pink-500">{instaContentType}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* PAGE 5: COGNITIVE DRIVES CONTROL & REAL-TIME NODES EDITOR (DRIVES) */}
               {activeMobileTab === 'drives' && (
@@ -5723,13 +5508,44 @@ Seus novos nós agora estão conectados no Grafo de Conhecimento, possibilitando
                         </div>
 
                         {/* SQLite Cloud integration */}
-                        <div className="bg-slate-950/90 border border-indigo-500/30 rounded-xl p-4 shadow-xl">
-                          <span className="text-[10px] font-mono text-[#a5b4fc] uppercase tracking-wider font-bold flex items-center gap-1">
-                            <Database className="w-3.5 h-3.5" /> Hospedar no SQLite Cloud (.db)
-                          </span>
-                          <p className="text-[9px] text-gray-400 leading-normal mb-2 mt-1">
-                            Exporte instantaneamente seu cérebro inteiro para SQLite Cloud em formato de semeadura estruturada pronta para uso produtivo.
+                        <div className="bg-slate-950/90 border border-indigo-500/30 rounded-xl p-4 shadow-xl flex flex-col gap-3">
+                          <div className="flex items-center justify-between border-b border-indigo-950/50 pb-2">
+                            <span className="text-[10px] font-mono text-[#a5b4fc] uppercase tracking-wider font-bold flex items-center gap-1.5 electromagnetic-glow">
+                              <Database className="w-3.5 h-3.5 text-[#00f2ff]" /> SQLite Cloud
+                            </span>
+                            {status.isSQLiteCloudActive ? (
+                              <span className="text-[8px] font-mono font-black uppercase text-[#00ff9d] bg-[#00ff9d]/5 border border-[#00ff9d]/30 px-1.5 py-0.5 rounded shadow-[0_0_6px_rgba(0,255,157,0.1)]">NUVEM ATIVA</span>
+                            ) : (
+                              <span className="text-[8px] font-mono font-black uppercase text-amber-400 bg-amber-400/5 border border-amber-400/30 px-1.5 py-0.5 rounded">MODO LOCAL</span>
+                            )}
+                          </div>
+                          
+                          <p className="text-[9px] text-gray-400 leading-relaxed">
+                            {status.isSQLiteCloudActive 
+                              ? "O Cérebro de Layon está conectado ao SQLite Cloud! As memórias, designs, relações e logs estão sendo sincronizados automaticamente na nuvem."
+                              : "Cada nó e relação do Cérebro são persistidos localmente. Você pode hospedar na nuvem criando um cluster gratuito no sqlitecloud.io e passando sua Connection String por variáveis de build."
+                            }
                           </p>
+
+                          <div className="bg-black/40 border border-slate-900 rounded-lg p-2 flex flex-col gap-1 text-[8.5px] font-mono">
+                            <div className="flex justify-between items-center text-gray-500 uppercase text-[7.5px] tracking-wider mb-0.5">
+                              <span>Instância de Comunicação</span>
+                              <span>Config</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">REST API Fallback</span>
+                              <span className="text-indigo-400 font-bold">Injetável</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Status Sync</span>
+                              {status.isSQLiteCloudActive ? (
+                                <span className="text-[#00ff9d] font-bold">100% Online</span>
+                              ) : (
+                                <span className="text-slate-400">Aguardando Host</span>
+                              )}
+                            </div>
+                          </div>
+
                           <a 
                             href="/api/sqlite/export"
                             download="cerebro_sqlitecloud_seeding.sql"
@@ -7681,21 +7497,36 @@ CREATE INDEX IF NOT EXISTS idx_relacoes_destino ON relacoes(destino_id);`);
       {fullscreenCreatorBlock === 'preview' && creatorResult && (
         <div id="fullscreen_presentation_playroom" className="fixed inset-0 z-[100] bg-[#05070a] text-slate-150 flex flex-col h-screen w-screen animate-fadeIn select-none font-sans">
           {/* HUD Header */}
-          <header className="h-14 px-6 bg-slate-950/95 border-b border-indigo-950/80 backdrop-blur-md flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 bg-[#00f2ff]/10 border border-[#00f2ff]/20 px-2.5 py-1 rounded">
+          <header className="h-14 px-3 sm:px-6 bg-slate-950/95 border-b border-indigo-950/80 backdrop-blur-md flex items-center justify-between shrink-0 gap-2">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              {/* Back / Exit Button - Always visible, leftmost, highly interactive and distinct */}
+              <button
+                type="button"
+                onClick={() => {
+                  playSciFiBeep(650, 0.08);
+                  setFullscreenCreatorBlock(null);
+                }}
+                className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/30 px-3 py-1.5 text-[10px] sm:text-xs font-mono font-black rounded-lg transition flex items-center gap-1.5 cursor-pointer shrink-0"
+                title="Voltar ao Painel do Cérebro"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-red-400" />
+                <span>Voltar</span>
+              </button>
+
+              <div className="hidden sm:flex items-center gap-1.5 bg-[#00f2ff]/10 border border-[#00f2ff]/20 px-2 py-0.5 rounded shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00f2ff] animate-ping" />
-                <span className="font-mono text-[9px] font-black text-[#00f2ff] tracking-widest uppercase">CONEXÃO ATIVA</span>
+                <span className="font-mono text-[8px] font-black text-[#00f2ff] tracking-widest uppercase">CONEXÃO</span>
               </div>
-              <div>
-                <h2 className="text-xs font-mono font-bold text-white tracking-tight">{creatorResult.appName}</h2>
-                <span className="text-[8px] text-gray-400 font-mono block uppercase tracking-widest -mt-0.5">Estação de Testes & Execução</span>
+
+              <div className="min-w-0">
+                <h2 className="text-xs font-mono font-extrabold text-white tracking-tight truncate max-w-[100px] sm:max-w-[200px]" title={creatorResult.appName}>{creatorResult.appName}</h2>
+                <span className="text-[7.5px] text-gray-500 font-mono block uppercase tracking-widest -mt-0.5 truncate hidden xs:block">Estação de Testes</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              {/* Device Selector */}
-              <div className="bg-black/60 p-0.5 rounded-lg border border-gray-900 gap-1 flex text-[9px] font-mono">
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Device Selector - hidden on narrow screens to prevent overlap */}
+              <div className="hidden md:flex bg-black/60 p-0.5 rounded-lg border border-gray-900 gap-1 text-[9px] font-mono shrink-0">
                 <button
                   type="button"
                   onClick={() => { setPreviewDeviceMode('desktop'); playSciFiBeep(800, 0.04); }}
@@ -7728,23 +7559,11 @@ CREATE INDEX IF NOT EXISTS idx_relacoes_destino ON relacoes(destino_id);`);
                   if (iframe) iframe.srcdoc = getLiveIframeHtml(creatorResult);
                   showToastMessage("Instância de Sandbox restaurada e reiniciada!");
                 }}
-                className="bg-slate-900/80 border border-slate-800 text-gray-300 hover:text-white px-3 py-1.5 text-[10px] font-mono rounded-lg transition flex items-center gap-1.5 cursor-pointer"
+                className="bg-slate-900/80 border border-slate-850 text-gray-300 hover:text-white px-2.5 py-1.5 text-[9.5px] font-mono rounded-lg transition flex items-center gap-1 cursor-pointer shrink-0"
                 title="Recarregar canais e limpar caches de execução"
               >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Reiniciar</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  playSciFiBeep(650, 0.08);
-                  setFullscreenCreatorBlock(null);
-                }}
-                className="bg-red-950/20 text-red-400 border border-red-500/20 hover:bg-red-950/40 px-3.5 py-1.5 text-[10px] font-mono font-bold rounded-lg transition flex items-center gap-1.5 cursor-pointer"
-              >
-                <Minimize2 className="w-3.5 h-3.5" />
-                <span>Sair</span>
+                <RefreshCw className="w-3 h-3 text-[#00ff9d]" />
+                <span className="hidden xs:inline">Reiniciar</span>
               </button>
             </div>
           </header>

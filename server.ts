@@ -40,7 +40,8 @@ async function bootstrap() {
         totalRelations: relations.length,
         averageWeight,
         learningLogs: logs,
-        logs
+        logs,
+        isSQLiteCloudActive: db.isSQLiteCloudActive()
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message || 'Erro interno do córtex' });

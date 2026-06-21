@@ -451,6 +451,63 @@ export async function syncGitHubRepoToBrain(
     tipo_relacao: 'Codifica'
   });
 
+  // Process and ingest system directory nodes
+  const directories = allGitItems.filter(item => {
+    if (item.type !== 'tree') return false;
+    const pathLower = item.path.toLowerCase();
+    if (pathLower.includes('node_modules/') || 
+        pathLower.includes('dist/') || 
+        pathLower.includes('build/') || 
+        pathLower.includes('tests/') ||
+        pathLower.startsWith('node_modules') || 
+        pathLower.startsWith('dist') || 
+        pathLower.startsWith('build') || 
+        pathLower.startsWith('tests') || 
+        pathLower.includes('.git')) {
+      return false;
+    }
+    return true;
+  });
+
+  const dirsToProcess = directories.slice(0, 30);
+  dirsToProcess.forEach(dirItem => {
+    const dirNodeId = `dir_${owner.toLowerCase()}_${repo.toLowerCase()}_${dirItem.path.replace(/\W/g, '_').toLowerCase()}`;
+    db.saveMemory({
+      id: dirNodeId,
+      conteudo: `Diretório: ${dirItem.path}`,
+      tipo: 'entidade',
+      timestamp: new Date().toISOString(),
+      visualWeight: 6,
+      lastAccessed: new Date().toISOString(),
+      repoName: repo,
+      details: `Pasta/Diretório de código dentro do repositório ${owner}/${repo}: ${dirItem.path}`
+    });
+    nodesAddedCount++;
+
+    // Connect folder --- belongs to ---> Repository
+    db.saveRelationship({
+      id: `rel_${dirNodeId}_${repoNodeId}`,
+      origem_id: dirNodeId,
+      destino_id: repoNodeId,
+      peso: 6,
+      tipo_relacao: 'diretorio_do_repositorio'
+    });
+
+    // Handle nested parent mappings
+    const parts = dirItem.path.split('/');
+    if (parts.length > 1) {
+      const parentPath = parts.slice(0, -1).join('/');
+      const parentNodeId = `dir_${owner.toLowerCase()}_${repo.toLowerCase()}_${parentPath.replace(/\W/g, '_').toLowerCase()}`;
+      db.saveRelationship({
+        id: `rel_${dirNodeId}_parent_${parentNodeId}`,
+        origem_id: dirNodeId,
+        destino_id: parentNodeId,
+        peso: 8,
+        tipo_relacao: 'subdiretorio_de'
+      });
+    }
+  });
+
   for (const gitFile of filesToProcess) {
     try {
       // Step 2: Fetch the file contents using Git raw media API or raw content raw format
@@ -494,6 +551,20 @@ export async function syncGitHubRepoToBrain(
         peso: 7,
         tipo_relacao: 'pertence_ao_repositorio'
       });
+
+      // Connect File --belongs to--> Folder Node if directory is tracked
+      const fileParts = gitFile.path.split('/');
+      if (fileParts.length > 1) {
+        const fileDirPath = fileParts.slice(0, -1).join('/');
+        const dirNodeId = `dir_${owner.toLowerCase()}_${repo.toLowerCase()}_${fileDirPath.replace(/\W/g, '_').toLowerCase()}`;
+        db.saveRelationship({
+          id: `rel_${fileNodeId}_dir_${dirNodeId}`,
+          origem_id: fileNodeId,
+          destino_id: dirNodeId,
+          peso: 8,
+          tipo_relacao: 'contido_na_pasta'
+        });
+      }
 
       // Parse and register dependencies
       parsed.imports.slice(0, 5).forEach(imp => {

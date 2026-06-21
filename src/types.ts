@@ -82,4 +82,5 @@ export interface BrainStatus {
   totalRelations: number;
   averageWeight: number;
   learningLogs: LearningLog[];
+  isSQLiteCloudActive?: boolean;
 }

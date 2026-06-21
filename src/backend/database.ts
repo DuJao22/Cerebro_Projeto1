@@ -1292,6 +1292,10 @@ class DatabaseManager {
       executeSQLiteCloud(sql).catch(e => console.error('Failed to sync deleteDesign in SQLite Cloud:', e));
     }
   }
+
+  isSQLiteCloudActive(): boolean {
+    return isSQLiteCloudEnabled;
+  }
 }
 
 export const db = new DatabaseManager();
